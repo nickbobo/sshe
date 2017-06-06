@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>简便无刷新文件上传系统</title>
+<script src="CJL.0.1.min.js"></script>
+<script>
+
+var QuickUpload = function(file, options) {
+	
+	this.file = $$(file);
+	
+	this._sending = false;//是否正在上传
+	this._timer = null;//定时器
+	this._iframe = null;//iframe对象
+	this._form = null;//form对象
+	this._inputs = {};//input对象
+	this._fFINISH = null;//完成执行函数
+	
+	$$.extend(this, this._setOptions(options));
+};
+QuickUpload._counter = 1;
+QuickUpload.prototype = {
+  //设置默认属性
+  _setOptions: function(options) {
+    this.options = {//默认值
+		action:		"",//设置action
+		timeout:	0,//设置超时(秒为单位)
+		parameter:	{},//参数对象
+		onReady:	function(){},//上传准备时执行
+		onFinish:	function(){},//上传完成时执行
+		onStop:		function(){},//上传停止时执行
+		onTimeout:	function(){}//上传超时时执行
+    };
+    return $$.extend(this.options, options || {});
+  },
+  //上传文件
+  upload: function() {
+	//停止上一次上传
+	this.stop();
+	//没有文件返回
+	if ( !this.file || !this.file.value ) return;
+	//可能在onReady中修改相关属性所以放前面
+	this.onReady();
+	//设置iframe,form和表单控件
+	this._setIframe();
+	this._setForm();
+	this._setInput();
+	//设置超时
+	if ( this.timeout > 0 ) {
+		this._timer = setTimeout( $$F.bind(this._timeout, this), this.timeout * 1000 );
+	}
+	//开始上传
+	this._form.submit();
+	this._sending = true;
+  },
+  //设置iframe
+  _setIframe: function() {
+	if ( !this._iframe ) {
+		//创建iframe
+		var iframename = "QUICKUPLOAD_" + QuickUpload._counter++,
+			iframe = document.createElement( $$B.ie ? "<iframe name=\"" + iframename + "\">" : "iframe");
+		iframe.name = iframename;
+		iframe.style.display = "none";
+		//记录完成程序方便移除
+		var finish = this._fFINISH = $$F.bind(this._finish, this);
+		//iframe加载完后执行完成程序
+		if ( $$B.ie ) {
+			iframe.attachEvent( "onload", finish );
+		} else {
+			iframe.onload = $$B.opera ? function(){ this.onload = finish; } : finish;
+		}
+		//插入body
+		var body = document.body; body.insertBefore( iframe, body.childNodes[0] );
+		
+		this._iframe = iframe;
+	}
+  },
+  //设置form
+  _setForm: function() {
+	if ( !this._form ) {
+		var form = document.createElement('form'), file = this.file;
+		//设置属性
+		$$.extend(form, {
+			target: this._iframe.name, method: "post", encoding: "multipart/form-data"
+		});
+		//设置样式
+		$$D.setStyle(form, {
+			padding: 0, margin: 0, border: 0,
+			backgroundColor: "transparent", display: "inline"
+		});
+		//提交前去掉form
+		file.form && $$E.addEvent(file.form, "submit", $$F.bind(this.dispose, this));
+		//插入form
+		file.parentNode.insertBefore(form, file).appendChild(file);
+		
+		this._form = form;
+	}
+	//action可能会修改
+	this._form.action = this.action;
+  },
+  //设置input
+  _setInput: function() {
+	var form = this._form, oldInputs = this._inputs, newInputs = {}, name;
+	//设置input
+	for ( name in this.parameter ) {
+		var input = form[name];
+		if ( !input ) {
+			//如果没有对应input新建一个
+			input = document.createElement("input");
+			input.name = name; input.type = "hidden";
+			form.appendChild(input);
+		}
+		input.value = this.parameter[name];
+		//记录当前input
+		newInputs[name] = input;
+		//删除已有记录
+		delete oldInputs[name];
+	}
+	//移除无用input
+	for ( name in oldInputs ) { form.removeChild( oldInputs[name] ); }
+	//保存当前input
+	this._inputs = newInputs;
+  },
+  //停止上传
+  stop: function() {
+	if ( this._sending ) {
+		this._sending = false;
+		clearTimeout(this._timer);
+		//重置iframe
+		if ( $$B.opera ) {//opera通过设置src会有问题
+			this._removeIframe();
+		} else {
+			this._iframe.src = "";
+		}
+		this.onStop();
+	}
+  },
+  //销毁程序
+  dispose: function() {
+	this._sending = false;
+	clearTimeout(this._timer);
+	//清除iframe
+	if ( $$B.firefox ) {
+		setTimeout($$F.bind(this._removeIframe, this), 0);
+	} else {
+		this._removeIframe();
+	}
+	//清除form
+	this._removeForm();
+	//清除dom关联
+	this._inputs = this._fFINISH = this.file = null;
+  },
+  //清除iframe
+  _removeIframe: function() {
+	if ( this._iframe ) {
+		var iframe = this._iframe;
+		$$B.ie ? iframe.detachEvent( "onload", this._fFINISH ) : ( iframe.onload = null );
+		document.body.removeChild(iframe); this._iframe = null;
+	}
+  },
+  //清除form
+  _removeForm: function() {
+	if ( this._form ) {
+		var form = this._form, parent = form.parentNode;
+		if ( parent ) {
+			parent.insertBefore(this.file, form); parent.removeChild(form);
+		}
+		this._form = this._inputs = null;
+	}
+  },
+  //超时函数
+  _timeout: function() {
+	if ( this._sending ) { this._sending = false; this.stop(); this.onTimeout(); }
+  },
+  //完成函数
+  _finish: function() {
+	if ( this._sending ) { this._sending = false; this.onFinish(this._iframe); }
+  }
+}
+
+</script>
+</head>
+<body>
+<br>
+文件属性查看：
+<input id="idFile" name="file" type="file" />
+<script>
+var file = $$("idFile"), fu = new QuickUpload(file, { action: "File.ashx" });
+file.onchange = function(){ fu.upload(); }
+</script>
+<br>
+<br>
+<br>
+<br>
+<style>
+.upload {width:600px;background:#fff;font-size:12px; border-collapse:collapse;}
+.upload td, .upload th {padding:5px;border:1px solid #ebebeb;}
+.upload thead td {background-color:#ebebeb;}
+.upload th { text-align:center;}
+.upload b {font-size:14px;}
+.upload tbody td{ height:30px;}
+.upload tfoot td{ word-spacing:20px;}
+.upload a:link, .upload a:visited, .upload a:hover, .upload a:active {color:#00F;}
+</style>
+<form action="Files.ashx" method="post" enctype="multipart/form-data">
+	<table border="0" class="upload">
+		<thead>
+			<tr>
+				<td colspan="4"><b>文件上传</b></td>
+			</tr>
+			<tr>
+				<th>选择文件</th>
+				<th width="25%">重命名</th>
+				<th width="15%">操作</th>
+				<th width="15%">状态</th>
+			</tr>
+		</thead>
+		<tbody id="idTable">
+			<tr>
+				<td><input name="file" type="file" />
+					<span></span></td>
+				<td><input size="15" name="title" type="text" />
+					<span></span></td>
+				<td align="center"><a href="?">重置</a></td>
+				<td align="center"><span>选择文件</span></td>
+			</tr>
+		</tbody>
+		<tfoot>
+			<tr>
+				<td colspan="4" align="center"><script>
+document.writeln("<input id=\"idAdd\" type=\"button\" value=\"添加文件\">")
+document.writeln("<input id=\"idQuick\" type=\"button\" value=\"极速上传\">")
+</script>
+					<input id="idNormal" type="submit" value="一般上传"></td>
+			</tr>
+		</tfoot>
+	</table>
+</form>
+<script>
+
+var qus = [], count = 0, table = $$("idTable"), model = table.removeChild(table.rows[0]);
+
+function add(){
+	var row = model.cloneNode(true),
+		inputs = row.getElementsByTagName("input"),
+		file = inputs[0], title = inputs[1],
+		spans = row.getElementsByTagName("span"),
+		msgfile = spans[0], msgtitle = spans[1], msg = spans[2],
+		a = row.getElementsByTagName("a")[0],
+		qu = new QuickUpload(file, {
+			action: "Files.ashx",
+			timeout: 6,
+			onReady: function(){
+				count++;
+				show("上传中..");
+				a.innerHTML = "停止"; a.onclick = function(){ qu.stop(); return false; };
+				//设置表单
+				this.parameter.title = title.value;
+				
+				file.style.display = title.style.display = "none";
+				msgfile.innerHTML = file.value; msgtitle.innerHTML = title.value;
+			},
+			onFinish: function(iframe){
+				try{//处理返回信息(需要后台配合)
+					var info = eval("(" + iframe.contentWindow.document.body.innerHTML + ")");
+					show("上传完成");
+				}catch(e){//获取数据出错
+					show("上传失败"); stop(); return;
+				}
+				count--; CheckBtn();
+				row.cells[0].innerHTML = "<a href=\"" + info.path + "\" target='_blank'>" + info.name + "</a>";
+				row.cells[1].innerHTML = info.name;
+				a.innerHTML = "下载"; a.href = info.path; a.onclick = null;
+				//销毁程序
+				this.dispose();
+			},
+			onStop: function(){ show("已经停止"); stop(); },
+			onTimeout: function(){ show("上传超时"); stop(); }
+		});
+	
+	a.onclick = reset
+	
+	function stop(){
+		count--; CheckBtn();
+		a.innerHTML = "重置"; a.onclick = reset;
+		file.style.display = msgfile.innerHTML =				
+		title.style.display = msgtitle.innerHTML = "";
+	}
+	
+	function reset(){ show("选择文件"); ResetFile(file); return false; }
+	
+	function show(m){ msg.innerHTML = m; }
+	
+	file.onchange = function(){ show(this.value ? "准备上传" : "选择文件"); }
+	qus.push(qu);
+	table.appendChild(row);
+}
+
+add();
+add();
+add();
+
+$$("idAdd").onclick = function(){
+	qus.length >= 6 ? alert("不要太贪心啦") : add();
+}
+
+$$("idQuick").onclick = function(){
+	$$A.filter(qus, function(qu){ qu.upload(); }); CheckBtn();
+}
+
+function CheckBtn(){
+	$$("idNormal").disabled = $$("idQuick").disabled = !!count;
+}
+
+function ResetFile(file){
+	file.value = "";//ff chrome safari
+	if ( file.value ) {
+		if ( $$B.ie ) {//ie
+			with(file.parentNode.insertBefore(document.createElement('form'), file)){
+				appendChild(file); reset(); removeNode(false);
+			}
+		} else {//opera
+			file.type = "text"; file.type = "file";
+		}
+	}
+}
+</script>
+</body>
+</html>
