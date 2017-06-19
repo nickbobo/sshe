@@ -9,7 +9,6 @@
 <jsp:include page="inc.jsp"></jsp:include>
 <script type="text/javascript">
 	$(function() {
-	/* alert("1111"); */
 		var loginFun = function() {
 			var loginTabs = $('#loginTabs').tabs('getSelected');//当前选中的tab
 			var $form = loginTabs.find('form');//选中的tab里面的form
@@ -106,10 +105,10 @@
 </script>
 </head>
 <body>
-	<strong>SSHE示例系统默认账户：</strong>
+	<strong style="display:none;">SSHE示例系统默认账户：</strong>
 	<br />
 	<br />
-	<table class="table">
+	<table class="table " style="display:none;">
 		<tr>
 			<th>登录名/密码</th>
 			<th>账户描述</th>
@@ -144,9 +143,9 @@
 		</tr>
 	</table>
 	<br />
-	<strong>如果登录不了，或者数据错乱、丢失等情况，请点击下面链接</strong>
+	<strong style="display:none;">如果登录不了，或者数据错乱、丢失等情况，请点击下面链接</strong>
 	<br />
-	<a href="<%=contextPath%>/init.jsp">初始化数据库(<%=contextPath%>/init.jsp)
+	<a style="display:none;" href="<%=contextPath%>/init.jsp">初始化数据库(<%=contextPath%>/init.jsp)
 	</a>
 
 	<div id="loginDialog" title="系统登录" style="display: none; width: 320px; height: 180px; overflow: hidden;">
@@ -196,4 +195,10 @@
 		</div>
 	</div>
 </body>
+<style type="text/css">
+body{
+    background: url(./imgPreview/timg.jpg) no-repeat top center;
+ 
+}
+</style>
 </html>

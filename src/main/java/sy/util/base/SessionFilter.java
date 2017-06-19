@@ -47,6 +47,9 @@ public class SessionFilter implements Filter {
 		request.getRemoteHost();// 获得客户端电脑的名字，若失败，则返回客户端电脑的IP地址
 		request.getProtocol();
 		
+		String jsonpCallback = request.getParameter("jsonpCallback");
+		System.out.println("jsonpCallback[999"+jsonpCallback+"]");
+		logger.info("jsonpCallback["+jsonpCallback+"]");
 //		System.out.println(request.getRequestURI()+
 //							":-->"+request.getServerPort()+
 //							":-->"+request.getServerName()+
@@ -58,7 +61,7 @@ public class SessionFilter implements Filter {
 		String servletPath = request.getServletPath();
 		for (String url : list) {
 			if (servletPath.indexOf(url) > -1) {// 需要过滤
-				logger.info("进入session过滤器->访问路径为[" + servletPath + "]");
+				logger.info("进入session过滤器->3333访问路径为[" + servletPath + "]");
 				if (request.getSession().getAttribute("sessionInfo") == null) {// session不存在需要拦截
 					request.setAttribute("msg", "您还没有登录或登录已超时，请重新登录，然后再刷新本功能！");
 					request.getRequestDispatcher("/error/noSession.jsp").forward(request, response);

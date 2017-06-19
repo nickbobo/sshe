@@ -15,33 +15,18 @@
 <jsp:include page="../../inc.jsp"></jsp:include>
 <script type="text/javascript">
 	var uploader;//上传对象
-	var submitNow = function($dialog, $grid, $pjq) {
-		var url;
-/* 		if ($(':input[name="data.id"]').val().length > 0) {
-			url = sy.contextPath + '/base/syuser!update.sy';
-		} else {
-			url = sy.contextPath + '/base/syuser!save.sy';
-		} */
-		$.post(url, sy.serializeObject($('form')), function(result) {
-			parent.sy.progressBar('close');//关闭上传进度条
-
-			if (result.success) {
-				$pjq.messager.alert('提示', result.msg, 'info');
-				$grid.datagrid('load');
-				$dialog.dialog('destroy');
-			} else {
-				$pjq.messager.alert('提示', result.msg, 'error');
-			}
-		}, 'json');
-	};
 	var submitForm = function($dialog, $grid, $pjq) {
 		if ($('form').form('validate')) {
 			if (uploader.files.length > 0) {
 				uploader.start();
 				uploader.bind('StateChanged', function(uploader) {// 在所有的文件上传完毕时，提交表单
-					if (uploader.files.length === (uploader.total.uploaded + uploader.total.failed)) {
-						submitNow($dialog, $grid, $pjq);
-					}
+			 		if (uploader.files.length === (uploader.total.uploaded + uploader.total.failed)) {
+			 			parent.sy.progressBar('close');//关闭上传进度条
+			 			/* alert($('#photo')[0].src) */
+			 			
+			 			console.info($dialog.fileUrl);
+			 			/* $dialog.dialog('destroy'); */
+					} 
 				});
 			} else {
 				/* submitNow($dialog, $grid, $pjq); */
@@ -49,31 +34,6 @@
 		}
 	};
 	$(function() {
-
-/* 		if ($(':input[name="data.id"]').val().length > 0) {
-			parent.$.messager.progress({
-				text : '数据加载中....'
-			});
-			$.post(sy.contextPath + '/base/syuser!getById.sy', {
-				id : $(':input[name="data.id"]').val()
-			}, function(result) {
-				if (result.id != undefined) {
-					$('form').form('load', {
-						'data.id' : result.id,
-						'data.name' : result.name,
-						'data.loginname' : result.loginname,
-						'data.sex' : result.sex,
-						'data.age' : result.age,
-						'data.photo' : result.photo
-					});
-					if (result.photo) {
-						$('#photo').attr('src', sy.contextPath + result.photo);
-					}
-				}
-				parent.$.messager.progress('close');
-			}, 'json');
-		} */
-
 		uploader = new plupload.Uploader({//上传插件定义
 			browse_button : 'pickfiles',//选择文件的按钮
 			container : 'container',//文件上传容器
@@ -128,19 +88,21 @@
 			});
 		});
 		uploader.bind('Error', function(up, err) {//出现错误
-			$('#filelist').append("<div>错误代码: " + err.code + ", 描述信息: " + err.message + (err.file ? ", 文件名称: " + err.file.name : "") + "</div>");
-			up.refresh();
+		 	$('#filelist').append("<div>错误代码: " + err.code + ", 描述信息: " + err.message + (err.file ? ", 文件名称: " + err.file.name : "") + "</div>");
+			up.refresh(); 
 		});
 		uploader.bind('FileUploaded', function(up, file, info) {//上传完毕
-			var response = $.parseJSON(info.response);
+ 			var response = $.parseJSON(info.response);
+			console.info(response);
+			parent.sy.progressBar('close');//关闭上传进度条
+			$('#photo').attr('src',"/sshe"+response.fileUrl); 
 			if (response.status) {
 				$('#' + file.id + '>strong').html("100%");
-				//console.info(response.fileUrl);
-				//console.info(file.name);
-				//$('#f1').append('<input type="hidden" name="fileUrl" value="'+response.fileUrl+'"/>');
-				//$('#f1').append('<input type="hidden" name="fileName" value="'+file.name+'"/><br/>');
+				$('#f1').append('<input type="hidden" name="fileUrl" value="'+response.fileUrl+'"/>');
+				$('#f1').append('<input type="hidden" name="fileName" value="'+file.name+'"/><br/>');
 				$(':input[name="data.photo"]').val(response.fileUrl);
-			}
+			} 
+			uploader.files=[];
 		});
 		uploader.init();
 
@@ -159,7 +121,7 @@
 							<div id="filelist">您的浏览器没有安装Flash插件，或不支持HTML5！</div>
 						</div></td>
 					<th></th>
-					<td><input name="data.photo" readonly="readonly" style="display: none;" /> <img id="photo" src="" style="width: 200px; height: 200px;"></td>
+					<td><input name="data.photo" readonly="readonly"  /> <img id="photo" src="/sshe/ssheUploadFile/userPhoto/2017/06/01/009b3eb7ddca45babe87af5feb819631.jpg" style="width: 200px; height: 200px;"></td>
 				</tr>
 			</table>
 		</fieldset>

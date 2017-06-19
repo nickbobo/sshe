@@ -8,12 +8,19 @@
 <html>
 <head>
 <title></title>
+<style type="text/css">
+	.iconImg{
+	width:25px;
+	height:25px;
+		background-size:25px 25px;
+	}
+</style>
 <jsp:include page="../../inc.jsp"></jsp:include>
 <script type="text/javascript">
 	var grid;
 	var addFun = function() {
 		var dialog = parent.sy.modalDialog({
-			title : '添加机构信息',
+			title : '添加活动用户信息',
 			url : sy.contextPath + '/securityJsp/base/ActivityUserUpdate.jsp',
 			buttons : [ {
 				text : '添加',
@@ -23,6 +30,38 @@
 			} ]
 		});
 	};
+
+	var showFun = function(id) {
+		var dialog = parent.sy.modalDialog({
+			title : '查看活动用户信息',
+			url : sy.contextPath + '/securityJsp/base/ActivityUserUpdate.jsp?id=' + id
+		});
+	};
+
+	var editFun = function(id) {
+		var dialog = parent.sy.modalDialog({
+			title : '编辑活动用户信息',
+			url : sy.contextPath + '/securityJsp/base/ActivityUserUpdate.jsp?id=' + id,
+			buttons : [ {
+				text : '编辑',
+				handler : function() {
+					dialog.find('iframe').get(0).contentWindow.submitForm(dialog, grid, parent.$);
+				}
+			} ]
+		});
+	};
+	var removeFun = function(id) {
+		parent.$.messager.confirm('询问', '您确定要删除此记录？', function(r) {
+			if (r) {
+				$.post(sy.contextPath + '/base/activityuser!delete.sy', {
+					id : id
+				}, function() {
+					grid.datagrid('reload');
+				}, 'json');
+			}
+		});
+	};
+	
 	$(function() {
 		grid = $('#grid').datagrid({
 			title : '',
@@ -79,6 +118,29 @@
 						return sy.formatString('<span title="{0}">{1}</span>', value, value);
 					}
 				}
+			}, {
+				title : '操作',
+				field : 'action',
+				width : '90',
+				formatter : function(value, row) {
+					var str = '';
+					<%if (securityUtil.havePermission("/base/syuser!getById")) {%>
+						str += sy.formatString('<img class="iconImg ext-icon-note" title="查看" onclick="showFun(\'{0}\');"/>', row.id);
+					<%}%>
+					<%if (securityUtil.havePermission("/base/syuser!update")) {%>
+						str += sy.formatString('<img class="iconImg ext-icon-note_edit" title="编辑" onclick="editFun(\'{0}\');"/>', row.id);
+					<%}%>
+			<%-- 		<%if (securityUtil.havePermission("/base/syuser!grantRole")) {%>
+						str += sy.formatString('<img class="iconImg ext-icon-user" title="用户角色" onclick="grantRoleFun(\'{0}\');"/>', row.id);
+					<%}%>
+					<%if (securityUtil.havePermission("/base/syuser!grantOrganization")) {%>
+						str += sy.formatString('<img class="iconImg ext-icon-group" title="用户机构" onclick="grantOrganizationFun(\'{0}\');"/>', row.id);
+					<%}%> --%>						
+					<%if (securityUtil.havePermission("/base/syuser!delete")) {%>
+						str += sy.formatString('<img class="iconImg ext-icon-note_delete" title="删除" onclick="removeFun(\'{0}\');"/>', row.id);
+					<%}%>
+					return str;
+				}
 			}
 			] ],
 			toolbar : '#toolbar',
@@ -88,7 +150,7 @@
 				});
 			},
 			onLoadSuccess : function(data) {
-				//$('.iconImg').attr('src', sy.pixel_0);
+				$('.iconImg').attr('src', sy.pixel_0);
 				parent.$.messager.progress('close');
 			}
 		});
@@ -102,10 +164,10 @@
 				<%if (securityUtil.havePermission("/base/syorganization!save")) {%>
 				<td><a href="javascript:void(0);" class="easyui-linkbutton" data-options="iconCls:'ext-icon-note_add',plain:true" onclick="addFun();">添加</a></td>
 				<%}%>
-				<!--<td><div class="datagrid-btn-separator"></div></td>
-				 <td><a onclick="redoFun();" href="javascript:void(0);" class="easyui-linkbutton" data-options="plain:true,iconCls:'ext-icon-resultset_next'">展开</a><a onclick="undoFun();" href="javascript:void(0);" class="easyui-linkbutton" data-options="plain:true,iconCls:'ext-icon-resultset_previous'">折叠</a></td>
-				 <td><div class="datagrid-btn-separator"></div></td>-->
-				<td><a onclick="grid.treegrid('reload');" href="javascript:void(0);" class="easyui-linkbutton" data-options="plain:true,iconCls:'ext-icon-arrow_refresh'">刷新</a></td>
+				<!-- <td><div class="datagrid-btn-separator"></div></td>
+				<td><a onclick="redoFun();" href="javascript:void(0);" class="easyui-linkbutton" data-options="plain:true,iconCls:'ext-icon-resultset_next'">展开</a><a onclick="undoFun();" href="javascript:void(0);" class="easyui-linkbutton" data-options="plain:true,iconCls:'ext-icon-resultset_previous'">折叠</a></td>
+				<td><div class="datagrid-btn-separator"></div></td> -->
+				<td><a onclick="grid.datagrid('reload');" href="javascript:void(0);" class="easyui-linkbutton" data-options="plain:true,iconCls:'ext-icon-arrow_refresh'">刷新</a></td>
 			</tr>
 		</table>
 	</div>

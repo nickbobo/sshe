@@ -15,57 +15,55 @@
 <head>
 <title></title>
 <jsp:include page="../../inc.jsp"></jsp:include>
+<style type="text/css">
+#filelist{
+width: 100px;
+}
+</style>
 <script type="text/javascript">
 
 var grid;
+var uploader;//上传对象
 
-var addHead = function() {
-	var dialog = parent.sy.modalDialog({
-		title : '用户头像添加',
-		url : sy.contextPath + '/securityJsp/base/ActivityUserHead.jsp',
-		buttons : [ {
-			text : '添加',
-			handler : function() {
-				dialog.find('iframe').get(0).contentWindow.submitForm(dialog, grid, parent.$);
-			}
-		} ]
-	});
+var submitNow = function($dialog, $grid, $pjq) {
+	var data = sy.serializeObject($('form')); 
+	var url;
+	if ($(':input[name="data.id"]').val().length > 0) { 
+		url = sy.contextPath + '/base/activityuser!update.sy';
+	} 
+	else {
+		url = sy.contextPath + '/base/activityuser!save.sy';
+	}
+	$.post(url, data, function(result) {
+		if (result.success) {
+			parent.sy.progressBar('close');//关闭上传进度
+			$grid.datagrid('reload');
+			$dialog.dialog('destroy');
+		} else {
+			$pjq.messager.alert('提示', result.msg, 'error');
+		}
+	}, 'json');
 };
 
 
-/* var head = parent.sy.modalDialog({
-	title : '用户头像添加',
-	url : sy.contextPath + '/securityJsp/base/ActivityUserHead.jsp',
-	buttons : [ {
-		text : '添加',
-		handler : function() {
-			dialog.find('iframe').get(0).contentWindow.submitForm(dialog, grid, parent.$);
+var submitForm = function($dialog, $grid, $pjq) {
+	if ($('form').form('validate')) {
+		if (uploader.files.length > 0 ) {
+			uploader.start();
+			uploader.bind('StateChanged', function(uploader) {// 在所有的文件上传完毕时，提交表单
+		 		if (uploader.files.length === (uploader.total.uploaded + uploader.total.failed)) {
+		 			submitNow($dialog, $grid, $pjq);
+				} 
+			});
+		} else {
+			submitNow($dialog, $grid, $pjq);
 		}
-	} ]
-}); */
-	var submitForm = function($dialog, $grid, $pjq) {
-		if ($('form').form('validate')) {
-			var url;
-			if ($(':input[name="data.id"]').val().length > 0) {
-				url = sy.contextPath + '/base/syorganization!update.sy';
-			} else {
-				url = sy.contextPath + '/base/syorganization!save.sy';
-			}
-			$.post(url, sy.serializeObject($('form')), function(result) {
-				if (result.success) {
-					$grid.treegrid('reload');
-					$dialog.dialog('destroy');
-				} else {
-					$pjq.messager.alert('提示', result.msg, 'error');
-				}
-			}, 'json');
-		}
-	};
-
+	 } 
+};
 	
 	
 	
-	var showIcons = function() {
+/* 	var showIcons = function() {
 		var dialog = parent.sy.modalDialog({
 			title : '浏览小图标',
 			url : sy.contextPath + '/style/icons.jsp',
@@ -77,36 +75,36 @@ var addHead = function() {
 				}
 			} ]
 		});
-	};
+	}; */
 	$(function() {
-		if ($(':input[name="data.id"]').val().length > 0) {
+ 		if ($(':input[name="data.id"]').val().length > 0) {
 			parent.$.messager.progress({
 				text : '数据加载中....'
 			});
-			$.post(
-							sy.contextPath + '/base/syorganization!getById.sy',
-							{
-								id : $(':input[name="data.id"]').val()
-							},
-							function(result) {
-								if (result.id != undefined) {
-									$('form').form(
-													'load',
-													{
-														'data.id' : result.id,
-														'data.name' : result.name,
-														'data.address' : result.address,
-														'data.syorganization.id' : result.syorganization ? result.syorganization.id
-																: '',
-														'data.iconCls' : result.iconCls,
-														'data.seq' : result.seq,
-														'data.code' : result.code
-													});
-									$('#iconCls').attr('class', result.iconCls); //设置背景图标
-								}
-								parent.$.messager.progress('close');
-							}, 'json');
-		}
+			$.post(sy.contextPath + '/base/activityuser!getById.sy',
+			{
+				id : $(':input[name="data.id"]').val()
+			},
+			function(result) {
+				if (result.id != undefined) {
+					$('form').form('load',{
+						'data.id' : result.id,
+						'data.name' : result.name,
+						'data.nickname' : result.nickname,
+						'data.headurl' : result.headurl,
+						'data.syorganization.id' : result.syorganization ? result.syorganization.id
+								: '',
+						'data.iconCls' : result.iconCls,
+						'data.seq' : result.seq,
+						'data.code' : result.code
+						});
+					console.info(result.headurl);
+					$('#photo').attr('src',result.headurl); 
+					$('#iconCls').attr('class', result.iconCls); //设置背景图标
+				}
+				parent.$.messager.progress('close');
+			}, 'json');
+		} 
 
 		//图片上传
 
@@ -183,6 +181,8 @@ var addHead = function() {
 		});
 		uploader.bind('FileUploaded', function(up, file, info) { //上传完毕
 			var response = $.parseJSON(info.response);
+			$(".photo").val(("/sshe"+response.fileUrl));
+			$('#photo').attr('src',"/sshe"+response.fileUrl); 
 			if (response.status) {
 				$('#' + file.id + '>strong').html("100%");
 				//console.info(response.fileUrl);
@@ -193,7 +193,7 @@ var addHead = function() {
 			}
 		});
 		uploader.init();
-
+		
 	});
 </script>
 </head>
@@ -210,7 +210,7 @@ var addHead = function() {
 				</tr>
 				<tr>
 					<th>登录名</th>
-					<td><input name="data.name" class="easyui-validatebox"
+					<td><input name="data.nickname" class="easyui-validatebox"
 						data-options="required:true" /></td>
 				</tr>
 				<tr>
@@ -228,11 +228,18 @@ var addHead = function() {
 					</select></td>
 				</tr>
 				<tr>
-					<th>照片上传</th>
-					<th>
-					<a href="javascript:void(0);" class="easyui-linkbutton" data-options="iconCls:'ext-icon-note_add',plain:true" onclick="addHead();">添加</a>
-					<!-- <input type="button" onclick="addHead();" value="照片上传"> -->
-					</th>
+					<th>照片上传</th>					<td>
+					 <input name="data.headurl" readonly="readonly" style="display: none;" class = "photo" class="easyui-validatebox"
+						data-options="required:true" />
+					<img id="photo" src="/sshe/ssheUploadFile/userPhoto/2017/06/01/009b3eb7ddca45babe87af5feb819631.jpg" style=" height: 200px;">
+					</td><td>
+					
+					<div id="container">
+							<a id="pickfiles" href="javascript:void(0);" class="easyui-linkbutton" data-options="iconCls:'ext-icon-zoom'">选择文件</a>
+							<div id="filelist">您的浏览器没有安装Flash插件，或不支持HTML5！</div>
+						</div>
+					</td>
+
 				</tr>
 			</table>
 		</fieldset>

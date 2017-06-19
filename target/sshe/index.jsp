@@ -8,6 +8,7 @@
 <html>
 <head>
 <title>SSHE</title>
+
 <jsp:include page="inc.jsp"></jsp:include>
 <%
 	SessionInfo sessionInfo = (SessionInfo) session.getAttribute("sessionInfo");
@@ -18,6 +19,12 @@
 	}
 %>
 </head>
-<body>
+<body style="background:red;">
 </body>
+<style type="text/css">
+body{
+    background: url(./imgPreview/timg.jpg) no-repeat top center;
+    background-size: 100% 100%;
+}
+</style>
 </html>

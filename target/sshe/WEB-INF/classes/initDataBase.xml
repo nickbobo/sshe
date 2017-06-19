@@ -168,10 +168,10 @@
 		<resource id="cxfDemo" name="ApacheCXF示例" url="/ws" description="Apache CXF DEMO" seq="0" iconCls="ext-icon-world" target="CXFDemo" pid="demo">
 			<resourcetype id="0" name="菜单" />
 		</resource>
-		<resource id="lyDemo" name="流云的Demo" url="http://jqext.sinaapp.com" description="针对EasyUI二次开发的DEMO" seq="1" iconCls="ext-icon-award_star_bronze_1" target="_blank" pid="demo">
+<!-- 		<resource id="lyDemo" name="流云的Demo" url="http://jqext.sinaapp.com" description="针对EasyUI二次开发的DEMO" seq="1" iconCls="ext-icon-award_star_bronze_1" target="_blank" pid="demo">
 			<resourcetype id="0" name="菜单" />
-		</resource>
-		<resource id="syproDemo" name="SyProDemo" url="http://sypro.jeasyuicn.com" description="SpringMvc+Spring3+Hibernate4+Maven" seq="2" iconCls="ext-icon-award_star_bronze_2" target="_blank" pid="demo">
+		</resource> -->
+<!-- 		<resource id="syproDemo" name="SyProDemo" url="http://sypro.jeasyuicn.com" description="SpringMvc+Spring3+Hibernate4+Maven" seq="2" iconCls="ext-icon-award_star_bronze_2" target="_blank" pid="demo">
 			<resourcetype id="0" name="菜单" />
 		</resource>
 		<resource id="phpDemo" name="phpDemo" url="http://php-easyui-demo.jeasyuicn.com" description="夏悸的php demo" seq="3" iconCls="ext-icon-award_star_bronze_3" target="_blank" pid="demo">
@@ -179,7 +179,7 @@
 		</resource>
 		<resource id="appDemo" name="桌面Demo" url="http://app.btboys.com" description="桌面演示demo" seq="4" iconCls="ext-icon-award_star_gold_1" target="_blank" pid="demo">
 			<resourcetype id="0" name="菜单" />
-		</resource>
+		</resource> -->
 		<resource id="easyuiDemo" name="EasyUI官方Demo" url="http://jeasyui.com/demo/main/index.php" description="EasyUI官方Demo" seq="5" iconCls="ext-icon-medal_bronze_1" pid="demo">
 			<resourcetype id="0" name="菜单" />
 		</resource>

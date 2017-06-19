@@ -1,8 +1,14 @@
 package sy.action;
 
 import java.io.IOException;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.Arrays;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -24,9 +30,13 @@ import sy.util.base.FastjsonFilter;
 import sy.util.base.HqlFilter;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.opensymphony.xwork2.ActionSupport;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 
+import junit.framework.Test;
 /**
  * 基础ACTION,其他ACTION继承此ACTION来获得writeJson和ActionSupport的功能
  * 
@@ -127,7 +137,39 @@ public class BaseAction<T> extends ActionSupport {
 	public void setQ(String q) {
 		this.q = q;
 	}
+	public static Map<String,String> readClassAttr(Object object) throws Exception{
 
+	    Field[] fields=object.getClass().getDeclaredFields();
+	    String keyList="";
+	    String valueList="";
+
+	    for(Field field:fields){
+	        field.setAccessible(true);  
+
+	        if(field.get(object)!=null&&!"".equals(field.get(object).toString())){
+
+	            keyList+=","+field.getName();
+
+	            if("a".equals(field.getName())){
+
+	                valueList+=","+"特殊格式哦";
+
+	            }else{
+
+	                valueList+=","+field.get(object);
+
+	            }
+
+	            System.out.println(field.getName()+"   "+field.get(object).toString());
+	        }
+	    }
+
+	    Map<String,String> maps=new HashMap<String, String>();
+	    maps.put("keys", keyList);
+	    maps.put("values",valueList);
+
+	    return maps;
+	}
 	/**
 	 * 将对象转换成JSON字符串，并响应回前台
 	 * 
@@ -146,6 +188,42 @@ public class BaseAction<T> extends ActionSupport {
 			if (includesProperties != null && includesProperties.length > 0) {
 				filter.getIncludes().addAll(Arrays.<String> asList(includesProperties));
 			}
+			
+			
+//			java.util.Calendar clndr = java.util.Calendar.getInstance();  
+//			Class cls = clndr.getClass();  
+//			  
+//			System.out.println(cls.getName());  
+//			java.lang.reflect.Field[] flds = object.;  
+//			  
+//			if ( flds != null )  
+//			{  
+//			    for ( int i = 0; i < flds.length; i++ )  
+//			    {  
+//			        System.out.println(flds[i].getName() + " - " + flds[i].get(clndr));  
+//			    }  
+//			}  
+//			
+
+			readClassAttr(object);
+
+//			object.getClass();
+//			
+//
+//			Object car = object;
+//			Field[] fields = c.getDeclaredFields();//拿到数据成员
+//			Method[] methods = c.getMethods();//拿到函数成员
+//			System.out.println(fields.length);
+//			System.out.println(methods.length);
+//			for(Field f : fields){
+//			    System.out.println("该类的内部变量有:"+f.getName());
+//			}
+//			for(Method m : methods) {
+//			    System.out.println("该类的方法有:"+m.getName());
+//			}
+			
+			System.out.println(object.toString());
+			System.out.println("对象转JSON：要排除的属性[" +object+ excludesProperties + "]要包含的属性[" + includesProperties + "]");
 			logger.info("对象转JSON：要排除的属性[" + excludesProperties + "]要包含的属性[" + includesProperties + "]");
 			String json;
 			String User_Agent = getRequest().getHeader("User-Agent");
@@ -160,9 +238,42 @@ public class BaseAction<T> extends ActionSupport {
 			logger.info("转换后的JSON字符串：" + json);
 			getResponse().setContentType("text/html;charset=utf-8");
 			getResponse().getWriter().write(json);
+
+
+			
+			getResponse().setContentType("text/plain");  
+			getResponse().setHeader("Pragma", "No-cache");  
+			getResponse().setHeader("Content-type", "application/json");  
+			getResponse().setHeader("Cache-Control", "no-cache");  
+			getResponse().setDateHeader("Expires", 0);  
+			
+//			HttpServletRequest  request = ServletActionContext.getRequest();
+//	        Map<String,String> map = new HashMap<String,String>();   
+//	        map.put("result", "content");  
+//	        PrintWriter out = response.getWriter();       
+//	        JSONObject resultJSON = JSONObject.fromObject(json); //根据需要拼装json  
+//	        String jsonpCallback = request.getParameter("jsonpCallback");//客户端请求参数  
+//	        StringUtils resultJSON;
+//	        getResponse().getWriter().println(jsonpCallback+"("+json.toString()+")");//返回jsonp格式数据  
+//	        out.flush();  
+//	        out.close(); 
+//	        
+//	        
+//	        String jsonpCallback = request.getParameter("jsonpCallback");//客户端请求参数  
+//	        out.println(jsonpCallback+"("+resultJSON.toString(1,1)+")");//返回jsonp格式数据  
+	        
 			getResponse().getWriter().flush();
 			getResponse().getWriter().close();
 		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (IllegalArgumentException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
