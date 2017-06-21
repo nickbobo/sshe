@@ -1,4 +1,5 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+	pageEncoding="UTF-8"%>
 <%@ page import="sy.model.base.SessionInfo"%>
 <%@ page import="sy.model.base.Syrole"%>
 <%@ page import="sy.model.base.Syorganization"%>
@@ -31,7 +32,7 @@
 		BeanUtils.copyNotNullProperties(resource, node);
 		node.setText(resource.getName());
 		if (resource.getSyresource() != null) {
-			node.setPid(resource.getSyresource().getId());
+	node.setPid(resource.getSyresource().getId());
 		}
 		resourceTree.add(node);
 	}
@@ -77,7 +78,8 @@
 								<th>性别</th>
 								<td>
 									<%
-										if (sessionInfo.getUser().getSex() != null && sessionInfo.getUser().getSex().equals("1")) {
+										if (sessionInfo.getUser().getSex() != null
+												&& sessionInfo.getUser().getSex().equals("1")) {
 											out.print("男");
 										} else {
 											out.print("女");
@@ -89,9 +91,11 @@
 							</tr>
 							<tr>
 								<th>创建时间</th>
-								<td><%=DateUtil.dateToString(sessionInfo.getUser().getCreatedatetime())%></td>
+								<td><%=DateUtil.dateToString(sessionInfo.getUser()
+					.getCreatedatetime())%></td>
 								<th>最后修改时间</th>
-								<td><%=DateUtil.dateToString(sessionInfo.getUser().getUpdatedatetime())%></td>
+								<td><%=DateUtil.dateToString(sessionInfo.getUser()
+					.getUpdatedatetime())%></td>
 							</tr>
 						</table>
 					</fieldset></td>
@@ -113,7 +117,9 @@
 									<%
 										out.println("<ul>");
 										for (Syrole role : roles) {
-											out.println(StringUtil.formateString("<li title='{1}'>{0}</li>", role.getName(), role.getDescription()));
+											out.println(StringUtil.formateString(
+													"<li title='{1}'>{0}</li>", role.getName(),
+													role.getDescription()));
 										}
 										out.println("</ul>");
 									%>
@@ -122,7 +128,8 @@
 									<%
 										out.println("<ul>");
 										for (Syorganization organization : organizations) {
-											out.println(StringUtil.formateString("<li>{0}</li>", organization.getName()));
+											out.println(StringUtil.formateString("<li>{0}</li>",
+													organization.getName()));
 										}
 										out.println("</ul>");
 									%>

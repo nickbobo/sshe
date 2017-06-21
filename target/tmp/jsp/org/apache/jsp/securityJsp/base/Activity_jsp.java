@@ -104,6 +104,9 @@ public final class Activity_jsp extends org.apache.jasper.runtime.HttpJspBase
       out.write("\tgrid = $('#grid').datagrid({\r\n");
       out.write("\t\ttitle : '',\r\n");
       out.write("\t\turl : sy.contextPath + '/base/activity!grid.sy',\r\n");
+      out.write("/*         loadFilter:function(data){\r\n");
+      out.write("        \treturn data.data;\r\n");
+      out.write("        }, */\r\n");
       out.write("\t\tstriped : true,\r\n");
       out.write("\t\trownumbers : true,\r\n");
       out.write("\t\tpagination : true,\r\n");

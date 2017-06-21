@@ -58,6 +58,9 @@ $(function() {
 	grid = $('#grid').datagrid({
 		title : '',
 		url : sy.contextPath + '/base/activity!grid.sy',
+/*         loadFilter:function(data){
+        	return data.data;
+        }, */
 		striped : true,
 		rownumbers : true,
 		pagination : true,

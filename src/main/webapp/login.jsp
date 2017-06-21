@@ -15,6 +15,7 @@
 			if ($form.length == 1 && $form.form('validate')) {
 				$('#loginBtn').linkbutton('disable');
 				$.post(sy.contextPath + '/base/syuser!doNotNeedSessionAndSecurity_login.sy', $form.serialize(), function(result) {
+					//result = result.data;
 					if (result.success) {
 						location.replace(sy.contextPath + '/index.jsp');
 					} else {
@@ -64,6 +65,9 @@
 
 		$('#userLoginCombogrid').combogrid({
 			url : sy.contextPath + '/base/syuser!doNotNeedSessionAndSecurity_loginNameComboGrid.sy',
+/*             loadFilter:function(data){
+            	return data.data;
+            }, */
 			panelWidth : 500,
 			panelHeight : 200,
 			idField : 'loginname',
@@ -78,11 +82,13 @@
 			sortOrder : 'asc',
 			pageSize : 5,
 			pageList : [ 5, 10 ],
+
 			columns : [ [ {
 				field : 'loginname',
 				title : '登录名',
 				width : 100,
-				sortable : true
+				//sortable : true,
+
 			}, {
 				field : 'name',
 				title : '姓名',

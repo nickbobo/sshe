@@ -75,36 +75,45 @@
 			}
 		}).dialog('close');
 
-		mainMenu = $('#mainMenu').tree({
-			url : sy.contextPath + '/base/syresource!doNotNeedSecurity_getMainMenu.sy',
-			parentField : 'pid',
-			onClick : function(node) {
-				if (node.attributes.url) {
-					var src = sy.contextPath + node.attributes.url;
-					if (!sy.startWith(node.attributes.url, '/')) {
-						src = node.attributes.url;
-					}
-					if (node.attributes.target && node.attributes.target.length > 0) {
-						window.open(src, node.attributes.target);
-					} else {
-						var tabs = $('#mainTabs');
-						var opts = {
-							title : node.text,
-							closable : true,
-							iconCls : node.iconCls,
-							content : sy.formatString('<iframe src="{0}" allowTransparency="true" style="border:0;width:100%;height:99%;" frameBorder="0"></iframe>', src),
-							border : false,
-							fit : true
-						};
-						if (tabs.tabs('exists', opts.title)) {
-							tabs.tabs('select', opts.title);
-						} else {
-							tabs.tabs('add', opts);
+		 $.ajax({
+		     type: 'GET',
+		     url: sy.contextPath + '/base/syresource!doNotNeedSecurity_getMainMenu.sy',
+		     success: function (result) {
+		         //var myJson = eval('(' + result + ')');
+		 		mainMenu = $('#mainMenu').tree({
+		    		data:result,
+					parentField : 'pid',
+					onClick : function(node) {
+						if (node.attributes.url) {
+							var src = sy.contextPath + node.attributes.url;
+							if (!sy.startWith(node.attributes.url, '/')) {
+								src = node.attributes.url;
+							}
+							if (node.attributes.target && node.attributes.target.length > 0) {
+								window.open(src, node.attributes.target);
+							} else {
+								var tabs = $('#mainTabs');
+								var opts = {
+									title : node.text,
+									closable : true,
+									iconCls : node.iconCls,
+									content : sy.formatString('<iframe src="{0}" allowTransparency="true" style="border:0;width:100%;height:99%;" frameBorder="0"></iframe>', src),
+									border : false,
+									
+									fit : true
+								};
+								if (tabs.tabs('exists', opts.title)) {
+									tabs.tabs('select', opts.title);
+								} else {
+									tabs.tabs('add', opts);
+								}
+							}
 						}
 					}
-				}
-			}
-		});
+				});
+		     }
+		 });
+
 
 		$('#mainLayout').layout('panel', 'center').panel({
 			onResize : function(width, height) {
@@ -180,8 +189,123 @@
 				}
 			} ]
 		});
+			 tabClose();
+			 tabCloseEven();
+			 
+			function tabClose()
+			 {
+			     /*双击关闭TAB选项卡*/
+			     $(".tabs-inner").dblclick(function(){
+			         var subtitle = $(this).children("span").text();
+			         $('#mainTabs').tabs('close',subtitle);
+			     })
+			 
+			    $("#mainTabs").bind('contextmenu',function(e){
+			         $('#mm').menu('show', {
+			             left: e.pageX,
+			             top: e.pageY,
+			         });
+			         
+			         var subtitle =$(this).children("span").text();
+			         $('#mm').data("currtab",subtitle);
+			         
+			         return false;
+			     });
+			 }
+			 //绑定右键菜单事件
+			 function tabCloseEven()
+			 {
+			     //关闭当前
+			     $('#mm-tabclose').click(function(){
+ 					var index = mainTabs.tabs('getTabIndex', mainTabs.tabs('getSelected'));
+					mainTabs.tabs('close', index); 
+/*  			         var currtab_title = $('#mm').data("currtab");
+			         $('#mainTabs').tabs('close',currtab_title); */
+			     })
+			     //全部关闭
+			     $('#mm-tabcloseall').click(function(){
+			         $('.tabs-inner span').each(function(i,n){
+			             var t = $(n).text();
+			             
+			             
+			             $('#mainTabs').tabs('close',t);
+			         });    
+			     });
+			     
+			     
+/* 			     var currtab_title = $('#mm').data("currtab");
+			        $('.tabs-inner span').each(function(i,n){
+			            var t = $(n).text();
+			            if(t!=currtab_title)
+			                $('#tabs').tabs('close',t);
+			        });     */
+			     //关闭除当前之外的TAB
+			     $('#mm-tabcloseother').click(function(){
+	 				var index = mainTabs.tabs('getTabIndex', mainTabs.tabs('getSelected'));
+	 				var name = '';
+					var tab = mainTabs.tabs('getTab', index);
 
+	 				$('.tabs-inner .tabs-title').each(function(i,n){
+	 					if(i>0){
+	 						var t = $(n).text();
+		 		        	if(tab.panel('options').title != t){
+			 		        		mainTabs.tabs('close', t); 
+	
+				        	} 
+	 					}
+	 				});
+	 				
+	 				return;    
+			     });
+
+			     //关闭当前右侧的TAB
+			     $('#mm-tabcloseright').click(function(){
+			         var nextall = $('.tabs-selected').nextAll();
+			         
+
+			         if(nextall.length==0){
+			             //msgShow('系统提示','后边没有啦~~','error');
+			             alert('后边没有啦~~');
+			             return false;
+			         }
+			         nextall.each(function(i,n){
+			        	 
+			             var t=$('a:eq(0) span',$(n)).text();
+			             mainTabs.tabs('close', t); 
+			         });
+			         return false;
+			     });
+			     //关闭当前左侧的TAB
+			     $('#mm-tabcloseleft').click(function(){
+			         var prevall = $('.tabs-selected').prevAll();
+			         
+			         var index = mainTabs.tabs('getTabIndex', mainTabs.tabs('getSelected'));
+			         var tab = mainTabs.tabs('getTab', index);
+			         if(prevall.length==0){
+			             alert('到头了，前边没有啦~~');
+			             return false;
+			         }
+			         prevall.each(function(i,n){
+							if(prevall.length-1>i){
+					             var t=$('a:eq(0) span',$(n)).text();
+					             console.info(t)
+					             mainTabs.tabs('close', t); 
+							}
+			        	 	
+
+			         });
+			         return false;
+			     });
+			 }
+			 
 	});
+	
+	
+	
+	
+	
+	
+	
 </script>
 </head>
 <body id="mainLayout" class="easyui-layout">
@@ -191,6 +315,14 @@
 	</div>
 	<div data-options="region:'center'" style="overflow: hidden;">
 		<div id="mainTabs">
+			<div id="mm" class="easyui-menu" style="width:150px;">
+		         <div id="mm-tabclose">关闭</div>
+		         <div id="mm-tabcloseall">全部关闭</div>
+		         <div id="mm-tabcloseother">除此之外全部关闭</div>
+		         <div class="menu-sep"></div>
+		         <div id="mm-tabcloseright">当前页右侧全部关闭</div>
+		         <div id="mm-tabcloseleft">当前页左侧全部关闭</div>
+		 	</div>
 			<div title="关于SSHE" data-options="iconCls:'ext-icon-heart'">
 				<iframe src="<%=contextPath%>/welcome.jsp" allowTransparency="true" style="border: 0; width: 100%; height: 99%;" frameBorder="0"></iframe>
 			</div>
@@ -227,5 +359,7 @@
 			</table>
 		</form>
 	</div>
+	
+
 </body>
 </html>

@@ -15,6 +15,10 @@ $(function() {
 	grid = $('#grid').datagrid({
 		title : '',
 		url : sy.contextPath + '/base/record!doNotNeedSecurity_getRecordByActivityUserId.sy',
+/*         loadFilter:function(data){
+        	data = data.data;
+ 			return data;
+        }, */
 		striped : true,
 		rownumbers : true,
 		pagination : true,
@@ -53,9 +57,6 @@ $(function() {
 			sortable : true
 		}
 		] ],
-		
-		
-		
 		toolbar : '#toolbar',
 		onBeforeLoad : function(param) {
 			parent.$.messager.progress({

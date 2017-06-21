@@ -61,6 +61,7 @@ public final class login_jsp extends org.apache.jasper.runtime.HttpJspBase
       out.write("\t\t\tif ($form.length == 1 && $form.form('validate')) {\r\n");
       out.write("\t\t\t\t$('#loginBtn').linkbutton('disable');\r\n");
       out.write("\t\t\t\t$.post(sy.contextPath + '/base/syuser!doNotNeedSessionAndSecurity_login.sy', $form.serialize(), function(result) {\r\n");
+      out.write("\t\t\t\t\t//result = result.data;\r\n");
       out.write("\t\t\t\t\tif (result.success) {\r\n");
       out.write("\t\t\t\t\t\tlocation.replace(sy.contextPath + '/index.jsp');\r\n");
       out.write("\t\t\t\t\t} else {\r\n");
@@ -110,6 +111,9 @@ public final class login_jsp extends org.apache.jasper.runtime.HttpJspBase
       out.write("\r\n");
       out.write("\t\t$('#userLoginCombogrid').combogrid({\r\n");
       out.write("\t\t\turl : sy.contextPath + '/base/syuser!doNotNeedSessionAndSecurity_loginNameComboGrid.sy',\r\n");
+      out.write("/*             loadFilter:function(data){\r\n");
+      out.write("            \treturn data.data;\r\n");
+      out.write("            }, */\r\n");
       out.write("\t\t\tpanelWidth : 500,\r\n");
       out.write("\t\t\tpanelHeight : 200,\r\n");
       out.write("\t\t\tidField : 'loginname',\r\n");
@@ -124,11 +128,13 @@ public final class login_jsp extends org.apache.jasper.runtime.HttpJspBase
       out.write("\t\t\tsortOrder : 'asc',\r\n");
       out.write("\t\t\tpageSize : 5,\r\n");
       out.write("\t\t\tpageList : [ 5, 10 ],\r\n");
+      out.write("\r\n");
       out.write("\t\t\tcolumns : [ [ {\r\n");
       out.write("\t\t\t\tfield : 'loginname',\r\n");
       out.write("\t\t\t\ttitle : '登录名',\r\n");
       out.write("\t\t\t\twidth : 100,\r\n");
-      out.write("\t\t\t\tsortable : true\r\n");
+      out.write("\t\t\t\t//sortable : true,\r\n");
+      out.write("\r\n");
       out.write("\t\t\t}, {\r\n");
       out.write("\t\t\t\tfield : 'name',\r\n");
       out.write("\t\t\t\ttitle : '姓名',\r\n");

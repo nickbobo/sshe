@@ -61,6 +61,10 @@ public final class Activityrecord_jsp extends org.apache.jasper.runtime.HttpJspB
       out.write("\tgrid = $('#grid').datagrid({\r\n");
       out.write("\t\ttitle : '',\r\n");
       out.write("\t\turl : sy.contextPath + '/base/record!doNotNeedSecurity_getRecordByActivityUserId.sy',\r\n");
+      out.write("/*         loadFilter:function(data){\r\n");
+      out.write("        \tdata = data.data;\r\n");
+      out.write(" \t\t\treturn data;\r\n");
+      out.write("        }, */\r\n");
       out.write("\t\tstriped : true,\r\n");
       out.write("\t\trownumbers : true,\r\n");
       out.write("\t\tpagination : true,\r\n");
@@ -99,9 +103,6 @@ public final class Activityrecord_jsp extends org.apache.jasper.runtime.HttpJspB
       out.write("\t\t\tsortable : true\r\n");
       out.write("\t\t}\r\n");
       out.write("\t\t] ],\r\n");
-      out.write("\t\t\r\n");
-      out.write("\t\t\r\n");
-      out.write("\t\t\r\n");
       out.write("\t\ttoolbar : '#toolbar',\r\n");
       out.write("\t\tonBeforeLoad : function(param) {\r\n");
       out.write("\t\t\tparent.$.messager.progress({\r\n");

@@ -7,6 +7,7 @@ import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
@@ -189,40 +190,20 @@ public class BaseAction<T> extends ActionSupport {
 				filter.getIncludes().addAll(Arrays.<String> asList(includesProperties));
 			}
 			
-			
-//			java.util.Calendar clndr = java.util.Calendar.getInstance();  
-//			Class cls = clndr.getClass();  
-//			  
-//			System.out.println(cls.getName());  
-//			java.lang.reflect.Field[] flds = object.;  
-//			  
-//			if ( flds != null )  
-//			{  
-//			    for ( int i = 0; i < flds.length; i++ )  
-//			    {  
-//			        System.out.println(flds[i].getName() + " - " + flds[i].get(clndr));  
-//			    }  
-//			}  
-//			
-
-			readClassAttr(object);
-
-//			object.getClass();
-//			
+	
+//			Hashtable<String, String> jsParams = new Hashtable<String, String>();
+//			jsParams.put("signature", "64a36e43e7a40c6a9a31202e244cbc8cd7d6416a");
+//			jsParams.put("noncestr", "25ca9cfa5903543d898631e7807e9c4e");
+//			jsParams.put("timestamp", "1497862082");
+//			Hashtable<String, Object> numbers = new Hashtable<String, Object>();
 //
-//			Object car = object;
-//			Field[] fields = c.getDeclaredFields();//拿到数据成员
-//			Method[] methods = c.getMethods();//拿到函数成员
-//			System.out.println(fields.length);
-//			System.out.println(methods.length);
-//			for(Field f : fields){
-//			    System.out.println("该类的内部变量有:"+f.getName());
-//			}
-//			for(Method m : methods) {
-//			    System.out.println("该类的方法有:"+m.getName());
-//			}
+//			numbers.put("errmsg:", "12");
+//			numbers.put("jsParams", jsParams);
+//			numbers.put("issubscribe", 1);
+//			numbers.put("data", object);			
+//			
+//			readClassAttr(numbers);
 			
-			System.out.println(object.toString());
 			System.out.println("对象转JSON：要排除的属性[" +object+ excludesProperties + "]要包含的属性[" + includesProperties + "]");
 			logger.info("对象转JSON：要排除的属性[" + excludesProperties + "]要包含的属性[" + includesProperties + "]");
 			String json;
@@ -267,9 +248,6 @@ public class BaseAction<T> extends ActionSupport {
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (IllegalArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (Exception e) {

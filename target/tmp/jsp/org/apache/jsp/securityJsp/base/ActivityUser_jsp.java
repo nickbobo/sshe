@@ -113,6 +113,9 @@ public final class ActivityUser_jsp extends org.apache.jasper.runtime.HttpJspBas
       out.write("\t\t\ttitle : '',\r\n");
       out.write("\t\t\turl : sy.contextPath + '/base/activityuser!grid.sy',\r\n");
       out.write("\t\t\tstriped : true,\r\n");
+      out.write("/*             loadFilter:function(data){\r\n");
+      out.write("            \treturn data.data;\r\n");
+      out.write("            }, */\r\n");
       out.write("\t\t\trownumbers : true,\r\n");
       out.write("\t\t\tpagination : true,\r\n");
       out.write("\t\t\tsingleSelect : true,\r\n");

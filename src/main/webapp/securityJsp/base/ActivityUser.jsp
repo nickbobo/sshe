@@ -67,6 +67,9 @@
 			title : '',
 			url : sy.contextPath + '/base/activityuser!grid.sy',
 			striped : true,
+/*             loadFilter:function(data){
+            	return data.data;
+            }, */
 			rownumbers : true,
 			pagination : true,
 			singleSelect : true,

@@ -27,7 +27,7 @@ public class SessionInterceptor extends MethodFilterInterceptor {
 
 	
 	protected String doIntercept(ActionInvocation actionInvocation) throws Exception {
-//		ServletActionContext.getRequest();
+		ServletActionContext.getRequest();
 //		HttpServletRequest request = new HttpServletRequest.getServletContext();
 //		String musictype = request.getParameter("musictype");
 

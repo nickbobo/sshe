@@ -83,17 +83,7 @@ public class RecordAction extends BaseAction<Record> {
 		// "allcount": 1
 		// }]
 		// }
-		Hashtable<String, String> jsParams = new Hashtable<String, String>();
-		jsParams.put("signature", "64a36e43e7a40c6a9a31202e244cbc8cd7d6416a");
-		jsParams.put("noncestr", "25ca9cfa5903543d898631e7807e9c4e");
-		jsParams.put("timestamp", "1497862082");
 
-		Hashtable<String, Object> numbers = new Hashtable<String, Object>();
-
-		numbers.put("errmsg:", "12");
-		numbers.put("jsParams", jsParams);
-		numbers.put("issubscribe", 1);
-		numbers.put("three", ar);
 
 		// for(Activityrecord ars : ar){
 		// System.out.println(ars.getId());
@@ -117,6 +107,6 @@ public class RecordAction extends BaseAction<Record> {
 		// }
 		// });
 
-		writeJson(numbers);
+		writeJson(ar);
 	}
 }
