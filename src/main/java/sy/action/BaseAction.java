@@ -37,7 +37,6 @@ import com.opensymphony.xwork2.ActionSupport;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
-import junit.framework.Test;
 /**
  * 基础ACTION,其他ACTION继承此ACTION来获得writeJson和ActionSupport的功能
  * 
